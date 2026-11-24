@@ -22,7 +22,7 @@
             padding: 24px;
             border-radius: 16px;
             box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
-            max-width: 520px;
+            max-width: 500px;
             width: 100%;
             text-align: center;
         }
@@ -82,47 +82,95 @@
             cursor: not-allowed;
         }
         #status {
-            margin-top: 14px;
+            margin-top: 12px;
             font-size: 14px;
             color: #fbbf24;
             min-height: 20px;
         }
-        canvas, video {
-            width: 100%;
-            margin-top: 16px;
+        .video-stage {
+            position: relative;
+            overflow: hidden;
+            margin-top: 14px;
             border-radius: 12px;
             background: #000000;
-            display: block;
+            aspect-ratio: 16 / 9;
         }
-        .download-link {
-            display: inline-block;
-            margin-top: 12px;
+        .video-stage img {
             width: 100%;
-            padding: 11px;
-            background: #10b981;
-            color: #ffffff;
-            text-decoration: none;
-            border-radius: 10px;
-            font-weight: bold;
-            box-sizing: border-box;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            animation: slowMotion 5s ease-in-out infinite alternate;
+            animation-play-state: running;
         }
-        .download-link:hover {
-            background: #059669;
+        .video-stage.paused img {
+            animation-play-state: paused;
+        }
+        .top-bar {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+        }
+        .badge {
+            background: rgba(15, 23, 42, 0.8);
+            color: #ffffff;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+        .caption-box {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 12px 16px;
+            background: linear-gradient(transparent, rgba(15, 23, 42, 0.9));
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center;
+            word-break: break-word;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .ctrl-btn {
+            background: #334155;
+            font-size: 14px;
+            padding: 10px;
+        }
+        .ctrl-btn:hover {
+            background: #475569;
+        }
+        @keyframes slowMotion {
+            0% {
+                transform: scale(1) translate(0, 0);
+            }
+            100% {
+                transform: scale(1.15) translate(-2%, -2%);
+            }
         }
     </style>
 </head>
 <body>
     <div class="box">
         <h1>AI Text to Video</h1>
-        <div class="hint">প্রতি লাইনে একটি করে দৃশ্য লিখুন (প্রতি দৃশ্য ৩.৫ সেকেন্ডের ভিডিও হবে):</div>
-        <textarea id="promptInput" rows="4" placeholder="উদাহরণ:&#10;Golden sunset over the calm ocean&#10;Soft waves glowing under twilight sky&#10;Peaceful night stars above the sea"></textarea>
+        <div class="hint">প্রতি লাইনে একটি করে দৃশ্য লিখুন:</div>
+        <textarea id="promptInput" rows="4" placeholder="sunset over sea&#10;golden waves on beach&#10;night stars above ocean"></textarea>
 
         <div class="options">
-            <label><input type="checkbox" id="voiceToggle" checked> ভয়েস ক্যাপশন (Voice)</label>
-            <label><input type="checkbox" id="musicToggle" checked> ব্যাকগ্রাউন্ড সাউন্ড (Music)</label>
+            <label><input type="checkbox" id="voiceCheck" checked> ক্যাপশন ভয়েস</label>
+            <label><input type="checkbox" id="soundCheck" checked> ব্যাকগ্রাউন্ড সাউন্ড</label>
         </div>
 
-        <button id="generateBtn">সাউন্ড ও ক্যাপশনসহ ভিডিও তৈরি করুন</button>
+        <button id="generateBtn">ভিডিও তৈরি করুন</button>
         <div id="status"></div>
         <div id="result"></div>
     </div>
