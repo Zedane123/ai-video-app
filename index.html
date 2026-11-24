@@ -1,16 +1,79 @@
-const promptInput = document.getElementById("promptInput");
-const generateBtn = document.getElementById("generateBtn");
-const statusDiv = document.getElementById("status");
-const resultDiv = document.getElementById("result");
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Text to Video App</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f1f5f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+        .box {
+            background: #ffffff;
+            padding: 28px;
+            border-radius: 14px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            font-size: 24px;
+            color: #0f172a;
+            margin-bottom: 10px;
+        }
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+            margin-bottom: 14px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        #status {
+            margin-top: 14px;
+            font-size: 14px;
+            color: #475569;
+        }
+        video, img {
+            max-width: 100%;
+            margin-top: 16px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>AI Text to Video</h1>
+        <textarea id="promptInput" rows="4" placeholder="আপনি কী ধরনের দৃশ্য বা ভিডিও চান তা লিখুন..."></textarea>
+        <button id="generateBtn">ভিডিও তৈরি করুন</button>
+        <div id="status"></div>
+        <div id="result"></div>
+    </div>
 
-generateBtn.addEventListener("click", () => {
-    const text = promptInput.value.trim();
-
-    if (!text) {
-        statusDiv.textContent = "আগে কিছু একটা লিখুন!";
-        return;
-    }
-
-    statusDiv.textContent = "আপনার লেখা পাওয়া গেছে: " + text;
-    resultDiv.innerHTML = "<p>এখন এখানে AI ভিডিও জেনারেট হওয়ার কোড যুক্ত করা হবে।</p>";
-});
+    <script src="script.js"></script>
+</body>
+</html>
