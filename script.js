@@ -12,6 +12,26 @@ generateBtn.addEventListener("click", () => {
         return;
     }
 
-    statusDiv.textContent = "আপনার লেখা পাওয়া গেছে: " + text;
-    resultDiv.innerHTML = "<p>এখানে এখন AI ভিডিও জেনারেট হওয়ার কোড যুক্ত করা হবে।</p>";
+    statusDiv.textContent = "ভিজ্যুয়াল তৈরি হচ্ছে... অনুগ্রহ করে অপেক্ষা করুন।";
+    resultDiv.innerHTML = "";
+    generateBtn.disabled = true;
+
+    const encodedPrompt = encodeURIComponent(text);
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}`;
+
+    const img = document.createElement("img");
+    img.alt = text;
+
+    img.onload = () => {
+        statusDiv.textContent = "রেজাল্ট তৈরি হয়েছে!";
+        generateBtn.disabled = false;
+    };
+
+    img.onerror = () => {
+        statusDiv.textContent = "রেজাল্ট লোড করা যায়নি। আবার চেষ্টা করুন।";
+        generateBtn.disabled = false;
+    };
+
+    img.src = imageUrl;
+    resultDiv.appendChild(img);
 });
