@@ -53,15 +53,63 @@
         button:hover {
             background: #1d4ed8;
         }
+        button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
         #status {
             margin-top: 14px;
             font-size: 14px;
             color: #475569;
         }
-        video, img {
-            max-width: 100%;
+        .scene-frame {
+            position: relative;
+            overflow: hidden;
             margin-top: 16px;
-            border-radius: 8px;
+            border-radius: 10px;
+            background: #0f172a;
+        }
+        .scene-frame img {
+            width: 100%;
+            display: block;
+            animation: slowZoom 10s ease-in-out infinite alternate;
+            animation-play-state: running;
+        }
+        .scene-frame.paused img {
+            animation-play-state: paused;
+        }
+        .scene-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px 14px;
+            background: rgba(15, 23, 42, 0.75);
+            color: #ffffff;
+            font-size: 14px;
+            text-align: left;
+            word-break: break-word;
+        }
+        .controls {
+            margin-top: 12px;
+            display: flex;
+            gap: 10px;
+        }
+        .secondary-btn {
+            background: #334155;
+            font-size: 14px;
+            padding: 10px;
+        }
+        .secondary-btn:hover {
+            background: #1e293b;
+        }
+        @keyframes slowZoom {
+            0% {
+                transform: scale(1) translate(0, 0);
+            }
+            100% {
+                transform: scale(1.12) translate(-2%, -2%);
+            }
         }
     </style>
 </head>
