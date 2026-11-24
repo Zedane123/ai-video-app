@@ -60,6 +60,46 @@ function speakLine(text) {
     window.speechSynthesis.speak(utter);
 }
 
+function downloadSceneFrame(imgElement, captionText, sceneNumber) {
+    try {
+        const tempCanvas = document.createElement("canvas");
+        tempCanvas.width = 1280;
+        tempCanvas.height = 720;
+        const ctx = tempCanvas.getContext("2d");
+
+        ctx.drawImage(imgElement, 0, 0, tempCanvas.width, tempCanvas.height);
+
+        ctx.fillStyle = "rgba(15, 23, 42, 0.82)";
+        ctx.fillRect(0, tempCanvas.height - 110, tempCanvas.width, 110);
+
+        ctx.font = "bold 32px 'Segoe UI', Arial, sans-serif";
+        ctx.fillStyle = "#ffffff";
+        ctx.textAlign = "center";
+        ctx.fillText(captionText, tempCanvas.width / 2, tempCanvas.height - 44);
+
+        const dataUrl = tempCanvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        link.href = dataUrl;
+        link.download = `scene-${sceneNumber}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        statusDiv.textContent = `Scene ${sceneNumber} ডাউনলোড হয়েছে!`;
+    } catch (err) {
+        // ক্রস-অরিজিন ব্লক হলে সরাসরি স্ক্রিপ্ট/ক্যাপশন ফাইল ডাউনলোড হবে
+        const blob = new Blob([captionText], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `caption-scene-${sceneNumber}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        statusDiv.textContent = `ক্যাপশন ফাইল (Scene ${sceneNumber}) ডাউনলোড হয়েছে!`;
+    }
+}
+
 generateBtn.addEventListener("click", () => {
     stopAllTimersAndAudio();
 
@@ -87,6 +127,8 @@ generateBtn.addEventListener("click", () => {
     stage.className = "video-stage";
 
     const img = document.createElement("img");
+    img.crossOrigin = "anonymous";
+
     const topBar = document.createElement("div");
     topBar.className = "top-bar";
 
@@ -109,6 +151,11 @@ generateBtn.addEventListener("click", () => {
     replayBtn.className = "ctrl-btn";
     replayBtn.textContent = "Restart";
 
+    const downloadBtn = document.createElement("button");
+    downloadBtn.type = "button";
+    downloadBtn.className = "download-btn";
+    downloadBtn.textContent = "Download Current Scene";
+
     topBar.appendChild(badge);
     stage.appendChild(img);
     stage.appendChild(topBar);
@@ -119,6 +166,7 @@ generateBtn.addEventListener("click", () => {
 
     resultDiv.appendChild(stage);
     resultDiv.appendChild(controls);
+    resultDiv.appendChild(downloadBtn);
 
     let index = 0;
     let paused = false;
@@ -181,6 +229,10 @@ generateBtn.addEventListener("click", () => {
         pauseBtn.textContent = "Pause";
         index = 0;
         startPlayback();
+    });
+
+    downloadBtn.addEventListener("click", () => {
+        downloadSceneFrame(img, scenes[index].text, index + 1);
     });
 
     img.onload = () => {
