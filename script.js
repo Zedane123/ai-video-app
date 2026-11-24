@@ -56,8 +56,20 @@ function speakLine(text) {
     if (!voiceCheck.checked || !("speechSynthesis" in window)) return;
     window.speechSynthesis.cancel();
     const utter = new SpeechSynthesisUtterance(text);
+    const hasBangla = /[\u0980-\u09FF]/.test(text);
+    utter.lang = hasBangla ? "bn-BD" : "en-US";
     utter.rate = 0.95;
     window.speechSynthesis.speak(utter);
+}
+
+function parseLineToScene(line) {
+    if (line.includes("|")) {
+        const parts = line.split("|");
+        const caption = parts[0].trim();
+        const imagePrompt = parts.slice(1).join("|").trim() || caption;
+        return { caption, imagePrompt };
+    }
+    return { caption: line, imagePrompt: line };
 }
 
 function downloadSceneFrame(imgElement, captionText, sceneNumber) {
@@ -86,7 +98,6 @@ function downloadSceneFrame(imgElement, captionText, sceneNumber) {
         document.body.removeChild(link);
         statusDiv.textContent = `Scene ${sceneNumber} ডাউনলোড হয়েছে!`;
     } catch (err) {
-        // ক্রস-অরিজিন ব্লক হলে সরাসরি স্ক্রিপ্ট/ক্যাপশন ফাইল ডাউনলোড হবে
         const blob = new Blob([captionText], { type: "text/plain;charset=utf-8" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -118,10 +129,13 @@ generateBtn.addEventListener("click", () => {
     resultDiv.innerHTML = "";
     generateBtn.disabled = true;
 
-    const scenes = lines.map((text) => ({
-        text,
-        url: `https://image.pollinations.ai/prompt/${encodeURIComponent(text)}`
-    }));
+    const scenes = lines.map((line) => {
+        const parsed = parseLineToScene(line);
+        return {
+            caption: parsed.caption,
+            url: `https://image.pollinations.ai/prompt/${encodeURIComponent(parsed.imagePrompt)}`
+        };
+    });
 
     const stage = document.createElement("div");
     stage.className = "video-stage";
@@ -190,10 +204,10 @@ generateBtn.addEventListener("click", () => {
         const current = scenes[idx];
         badge.textContent = `Scene ${idx + 1} / ${scenes.length}`;
         img.src = current.url;
-        img.alt = current.text;
-        animateCaption(current.text);
+        img.alt = current.caption;
+        animateCaption(current.caption);
         if (playAudio) {
-            speakLine(current.text);
+            speakLine(current.caption);
         }
     }
 
@@ -219,7 +233,7 @@ generateBtn.addEventListener("click", () => {
         if (paused && "speechSynthesis" in window) {
             window.speechSynthesis.cancel();
         } else if (!paused) {
-            speakLine(scenes[index].text);
+            speakLine(scenes[index].caption);
         }
     });
 
@@ -232,7 +246,7 @@ generateBtn.addEventListener("click", () => {
     });
 
     downloadBtn.addEventListener("click", () => {
-        downloadSceneFrame(img, scenes[index].text, index + 1);
+        downloadSceneFrame(img, scenes[index].caption, index + 1);
     });
 
     img.onload = () => {
