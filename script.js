@@ -1,0 +1,17 @@
+const promptInput = document.getElementById("promptInput");
+const generateBtn = document.getElementById("generateBtn");
+const statusDiv = document.getElementById("status");
+const resultDiv = document.getElementById("result");
+
+generateBtn.addEventListener("click", () => {
+    const text = promptInput.value.trim();
+
+    if (!text) {
+        statusDiv.textContent = "আগে কিছু একটা লিখুন!";
+        resultDiv.innerHTML = "";
+        return;
+    }
+
+    statusDiv.textContent = "আপনার লেখা পাওয়া গেছে: " + text;
+    resultDiv.innerHTML = "<p>এখানে এখন AI ভিডিও জেনারেট হওয়ার কোড যুক্ত করা হবে।</p>";
+});
