@@ -7,7 +7,8 @@
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: #f1f5f9;
+            background: #0f172a;
+            color: #f8fafc;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -17,33 +18,50 @@
             box-sizing: border-box;
         }
         .box {
-            background: #ffffff;
-            padding: 28px;
-            border-radius: 14px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-            max-width: 480px;
+            background: #1e293b;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+            max-width: 520px;
             width: 100%;
             text-align: center;
         }
         h1 {
             font-size: 24px;
-            color: #0f172a;
-            margin-bottom: 10px;
+            color: #38bdf8;
+            margin: 0 0 8px 0;
         }
         .hint {
             font-size: 13px;
-            color: #64748b;
+            color: #cbd5e1;
             margin-bottom: 12px;
             text-align: left;
+            line-height: 1.5;
         }
         textarea {
             width: 100%;
             padding: 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: #ffffff;
+            border-radius: 10px;
             font-size: 14px;
             box-sizing: border-box;
+            margin-bottom: 12px;
+        }
+        .options {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
             margin-bottom: 14px;
+            font-size: 13px;
+            color: #e2e8f0;
+        }
+        .options label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
         }
         button {
             width: 100%;
@@ -51,7 +69,7 @@
             background: #2563eb;
             color: #ffffff;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
@@ -60,84 +78,51 @@
             background: #1d4ed8;
         }
         button:disabled {
-            background: #94a3b8;
+            background: #64748b;
             cursor: not-allowed;
         }
         #status {
             margin-top: 14px;
             font-size: 14px;
-            color: #475569;
+            color: #fbbf24;
+            min-height: 20px;
         }
-        .scene-frame {
-            position: relative;
-            overflow: hidden;
-            margin-top: 16px;
-            border-radius: 10px;
-            background: #0f172a;
-            aspect-ratio: 16 / 9;
-        }
-        .scene-frame img {
+        canvas, video {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            margin-top: 16px;
+            border-radius: 12px;
+            background: #000000;
             display: block;
-            animation: slowZoom 6s ease-in-out infinite alternate;
-            animation-play-state: running;
         }
-        .scene-frame.paused img {
-            animation-play-state: paused;
-        }
-        .scene-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(15, 23, 42, 0.78);
-            color: #ffffff;
-            font-size: 12px;
-            padding: 4px 10px;
-            border-radius: 999px;
-        }
-        .scene-caption {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 12px 14px;
-            background: rgba(15, 23, 42, 0.78);
-            color: #ffffff;
-            font-size: 14px;
-            text-align: left;
-            word-break: break-word;
-        }
-        .controls {
+        .download-link {
+            display: inline-block;
             margin-top: 12px;
-            display: flex;
-            gap: 10px;
+            width: 100%;
+            padding: 11px;
+            background: #10b981;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            box-sizing: border-box;
         }
-        .secondary-btn {
-            background: #334155;
-            font-size: 14px;
-            padding: 10px;
-        }
-        .secondary-btn:hover {
-            background: #1e293b;
-        }
-        @keyframes slowZoom {
-            0% {
-                transform: scale(1) translate(0, 0);
-            }
-            100% {
-                transform: scale(1.14) translate(-2%, -2%);
-            }
+        .download-link:hover {
+            background: #059669;
         }
     </style>
 </head>
 <body>
     <div class="box">
         <h1>AI Text to Video</h1>
-        <div class="hint">প্রতি লাইনে একটি করে দৃশ্য লিখুন (একাধিক লাইন দিলে স্লাইডশো মোশন চলবে):</div>
-        <textarea id="promptInput" rows="4" placeholder="উদাহরণ:&#10;sunset over sea&#10;golden waves on beach&#10;night stars above ocean"></textarea>
-        <button id="generateBtn">ভিডিও তৈরি করুন</button>
+        <div class="hint">প্রতি লাইনে একটি করে দৃশ্য লিখুন (প্রতি দৃশ্য ৩.৫ সেকেন্ডের ভিডিও হবে):</div>
+        <textarea id="promptInput" rows="4" placeholder="উদাহরণ:&#10;Golden sunset over the calm ocean&#10;Soft waves glowing under twilight sky&#10;Peaceful night stars above the sea"></textarea>
+
+        <div class="options">
+            <label><input type="checkbox" id="voiceToggle" checked> ভয়েস ক্যাপশন (Voice)</label>
+            <label><input type="checkbox" id="musicToggle" checked> ব্যাকগ্রাউন্ড সাউন্ড (Music)</label>
+        </div>
+
+        <button id="generateBtn">সাউন্ড ও ক্যাপশনসহ ভিডিও তৈরি করুন</button>
         <div id="status"></div>
         <div id="result"></div>
     </div>
