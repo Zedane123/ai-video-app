@@ -9,6 +9,18 @@ let sceneInterval = null;
 let typeInterval = null;
 let audioCtx = null;
 let oscList = [];
+let availableVoices = [];
+
+function loadVoices() {
+    if ("speechSynthesis" in window) {
+        availableVoices = window.speechSynthesis.getVoices();
+    }
+}
+
+loadVoices();
+if ("speechSynthesis" in window) {
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+}
 
 function stopAllTimersAndAudio() {
     if (sceneInterval) {
@@ -52,12 +64,34 @@ function startSoftSound() {
     });
 }
 
+function findBanglaVoice() {
+    if (!availableVoices.length && "speechSynthesis" in window) {
+        availableVoices = window.speechSynthesis.getVoices();
+    }
+    return availableVoices.find((v) =>
+        v.lang && (v.lang.toLowerCase().includes("bn") || v.name.toLowerCase().includes("bangla") || v.name.toLowerCase().includes("bengali"))
+    );
+}
+
 function speakLine(text) {
     if (!voiceCheck.checked || !("speechSynthesis" in window)) return;
     window.speechSynthesis.cancel();
+
     const utter = new SpeechSynthesisUtterance(text);
     const hasBangla = /[\u0980-\u09FF]/.test(text);
-    utter.lang = hasBangla ? "bn-BD" : "en-US";
+
+    if (hasBangla) {
+        const bnVoice = findBanglaVoice();
+        if (bnVoice) {
+            utter.voice = bnVoice;
+            utter.lang = bnVoice.lang;
+        } else {
+            utter.lang = "bn-BD";
+        }
+    } else {
+        utter.lang = "en-US";
+    }
+
     utter.rate = 0.95;
     window.speechSynthesis.speak(utter);
 }
